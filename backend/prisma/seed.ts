@@ -3,203 +3,238 @@ import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  console.log('Seeding database...');
+const IMAGES: Record<string, string> = {
+  "WiFi Smart Switch 1 Gang (US)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-star-ring-2nd-generation-smart-wifi-3-waysingle-pole-push-button-light-switch-1234-gang-864554.jpg?v=1685695883",
+  "WiFi Smart Switch 2 Gang (US)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-star-ring-2nd-generation-smart-wifi-3-waysingle-pole-push-button-light-switch-1234-gang-864554.jpg?v=1685695883",
+  "WiFi Smart Switch 3 Gang (US)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-star-ring-2nd-generation-smart-wifi-3-waysingle-pole-push-button-light-switch-1234-gang-864554.jpg?v=1685695883",
+  "WiFi Smart Switch 1 Gang (EU)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/Star_Featherg_Series_WiFi_Smart_Switch_Push_Button_With_Neutral_Light_Scene_2in1_Switch_EU_Version.jpg?v=1750661921",
+  "Smart Dimmer Switch (EU)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-wifi-smart-light-dimmer-touch-panel-switch-123-gang-eu-version-890545.jpg?v=1663923354",
+  "Smart Dimmer Switch (US)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-wifi-smart-light-dimmer-touch-panel-switch-123-gang-us-version-202519.png?v=1661370994",
+  "Smart Fan Switch (US)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/new-wifi-smart-rotary-light-dimmer-switch-schedule-timer-brightness-memory-eu-535041.jpg?v=1615966248",
+  "Smart Fan Light Switch (US)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-star-ring-2nd-generation-smart-wifi-3-waysingle-pole-push-button-light-switch-1234-gang-864554.jpg?v=1685695883",
+  "WiFi Curtain Switch (US)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-wifi-rf433-smart-25d-arc-glass-touch-panel-curtain-switch-for-roller-blinds-shutters-735483.jpg?v=1757579515",
+  "WiFi Garage Door Opener": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/rf433-remote-emitter-for-controlling-wifi-zigbee-curtain-motor-hand-held-wall-mounted-transmitter-multiple-channels-optional-165850.jpg?v=1615966310",
+  "WiFi Switch Module 1 Gang": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/mini-new-diy-wifi-rf433-smart-light-relay-switch-module-321684.png?v=1647534125",
+  "WiFi Switch Module 2 Gang": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/mini-new-diy-wifi-rf433-smart-light-relay-switch-module-321684.png?v=1647534125",
+  "WiFi Dimmer Module": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/zigbee-smart-dimmer-switch-relay-module-tuya-zigbee30-hub-required-12-way-12-gang-660137.jpg?v=1661457705",
+  "WiFi Curtain Module": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/wifi-mini-diy-smart-curtain-switch-module-for-electric-motorized-roller-blinds-shutter-motor-eu-373822.jpg?v=1660073237",
+  "WiFi Chain Roller Blinds Motor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/rechargeable-tubular-roller-blind-motor-rf433-remote-control-718776.jpg?v=1712566146",
+  "BHT-002 WiFi Thermostat": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-wifi-smart-home-heating-knob-thermostat-temperature-controller-for-water-gas-boiler-electric-heating-419771.png?v=1691678326",
+  "BHT-006 WiFi Thermostat": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-wifi-smart-home-heating-knob-thermostat-temperature-controller-for-water-gas-boiler-electric-heating-419771.png?v=1691678326",
+  "BHT-3000 WiFi Thermostat": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/smart-thermostat-matter-wifi-temperature-controller-water-electric-gas-boiler-floor-heating-623002.jpg?v=1730309544",
+  "BHT-8000 WiFi Thermostat": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/smart-thermostat-matter-wifi-temperature-controller-water-electric-gas-boiler-floor-heating-623002.jpg?v=1730309544",
+  "WiFi PIR Motion Sensor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/smart-pir-sensor-human-body-motion-detector-home-security-and-scene-linkage-automation-417713.jpg?v=1725420545",
+  "WiFi Temperature & Humidity Sensor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-zigbee-smart-temperature-and-humidity-sensor-indoor-hygrometer-thermometer-detector-447150.jpg?v=1677747161",
+  "WiFi Door & Window Sensor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-zigbee-smart-temperature-and-humidity-sensor-indoor-hygrometer-thermometer-detector-447150.jpg?v=1677747161",
+  "WiFi Smoke Sensor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-zigbee-smart-smoke-fire-detector-sensor-761970.jpg?v=1676895999",
+  "WiFi Gas Leakage Sensor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/CarbonMonoxide_NaturalGasDetector-1.jpg?v=1751514642",
+  "WiFi Water Leakage Sensor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-zigbee-smart-temperature-and-humidity-sensor-indoor-hygrometer-thermometer-detector-447150.jpg?v=1677747161",
+  "WiFi Audible & Visual Alarm": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/tuya-smart-wifizigbee-sound-light-siren-alarm-solar-energy-outdoor-ipx5-waterproof-tamper-alarm-with-rechargeable-battery-434922.png?v=1688695158",
+  "Smart LED Bulb E27 RGB 9W": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-wifi-smart-led-light-bulb-dimmable-lamp-14w-rgb-e27-color-changeable-2700k-6500k-513783.png?v=1688695140",
+  "Smart LED Bulb E27 RGB 13W": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-wifi-smart-led-light-bulb-dimmable-lamp-14w-rgb-e27-color-changeable-2700k-6500k-513783.png?v=1688695140",
+  "Smart LED Bulb GU10 RGB 5W": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-wifi-gu10-smart-light-bulbs-led-rgb-warm-dimmable-lamps-5w-alexa-google-app-714466.png?v=1694164056",
+  "Smart Downlight RGB 7W": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/1_3.jpg?v=1623920231",
+  "Mini Smart Socket 10A": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/smart-plug-matter-wifi-socket-16a-outlet-power-monitor-eu-version-255756.png?v=1741826763",
+  "Mini Smart Socket 16A": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/smart-plug-matter-wifi-socket-16a-outlet-power-monitor-eu-version-255756.png?v=1741826763",
+  "Smart Dimmer Power Socket": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-wifi-smart-power-dimmer-plug-brightness-adjust-timer-socket-eu-151650.jpg?v=1668076316",
+  "Glass Panel Smart Socket (EU)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-zigbee-smart-wall-socket-glass-panel-power-monitor-762208.jpg?v=1657737140",
+  "WiFi IR Remote (UFO-R1)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-wifi-usb-smart-ir-rf-wireless-universal-remote-controller-822271.jpg?v=1688695148",
+  "WiFi IR+RF Remote (UFO-R2)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-wifi-usb-smart-ir-rf-wireless-universal-remote-controller-822271.jpg?v=1688695148",
+  "Air Conditioner Mate": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-tuya-wifi-smart-ir-thermostat-ac-remote-controller-temperature-and-humidity-sensor-621080.jpg?v=1657823876",
+  "Smart Boiler Switch": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-smart-wifi-water-heater-boiler-switch-wireless-control-timer-for-heating-water-484546.jpg?v=1687311499",
+  "Smart Valve (WiFi)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-smart-zigbee-water-heater-boiler-switch-wireless-control-timer-for-heating-water-666608.jpg?v=1668076315",
+  "WiFi Smart Door Lock": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/bluetooth-smart-door-lock-with-passcode-keypad-biometric-entry-doorknob-with-handle-769897.jpg?v=1721940339",
+  "WiFi Smart Wake-up Light": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/wifi-wake-up-smart-light-alarm-clock-with-7-colors-sunrise-sunset-simulation-952225.jpg?v=1618455349",
+  "WiFi Smart Star Projector": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-smart-wifi-ambient-lighting-tv-backlight-4k-hdmi-20-sync-box-led-light-strip-music-174636.jpg?v=1685063393",
+  "ZigBee Smart Switch 1 Gang (US)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-star-ring-zigbee-smart-light-switch-single-pole-no-neutral-required-no-capacitor-392141.jpg?v=1703858789",
+  "ZigBee Smart Dimmer Switch": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-star-ring-zigbee-smart-dimmer-switch-for-light-dimming-work-with-alexa-google-home-dimmable-1-3gang-602714.png?v=1691429812",
+  "ZigBee Scene Switch": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/MOESZigbeeWirelessSceneSwitch-3Gang9ScenariosSmartPushButtonRemote_MagneticHandheldDesign.jpg?v=1777273025",
+  "ZigBee Smart Knob Dimmer": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/new-wifi-smart-rotary-light-dimmer-switch-schedule-timer-brightness-memory-eu-535041.jpg?v=1615966248",
+  "ZigBee Smart Button": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/zigbee-smart-push-button-switch-and-zigbee-scene-switch-kit-l-only-no-neutral-wire-or-ln-wiring-optional-no-capacitor-required-tuya-zigbee-hub-required-726824.jpg?v=1621653787",
+  "ZigBee Switch Module 1 Gang": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/tuya-zigbee-30-smart-light-switch-module-2mqtt-setup-available-839515.jpg?v=1647497716",
+  "ZigBee Dimmer Module": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/zigbee-smart-dimmer-switch-relay-module-tuya-zigbee30-hub-required-12-way-12-gang-660137.jpg?v=1661457705",
+  "ZigBee LED Driver ZLD-RCW": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/wifi-smart-led-light-strip-rgb-strip-light-5050-controller-music-sync-mic-sound-color-changing-smart-life-app-24-key-remote-control-904086.jpg?v=1662712147",
+  "ZigBee PIR Motion Sensor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/smart-pir-sensor-human-body-motion-detector-home-security-and-scene-linkage-automation-417713.jpg?v=1725420545",
+  "ZigBee Door & Window Sensor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-zigbee-smart-temperature-and-humidity-sensor-indoor-hygrometer-thermometer-detector-447150.jpg?v=1677747161",
+  "ZigBee Smoke Detector": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-zigbee-smart-smoke-fire-detector-sensor-761970.jpg?v=1676895999",
+  "ZigBee Gas Leakage Sensor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/CarbonMonoxide_NaturalGasDetector-1.jpg?v=1751514642",
+  "ZigBee Water Leakage Sensor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-zigbee-smart-temperature-and-humidity-sensor-indoor-hygrometer-thermometer-detector-447150.jpg?v=1677747161",
+  "ZigBee SOS Button": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/moes-tuya-smart-fingerbot-plus-bluetooth-wireless-switch-bot-touch-onoff-411847.jpg?v=1755584338",
+  "ZigBee Smart Brightness Thermometer": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-zigbee-smart-temperature-and-humidity-sensor-indoor-hygrometer-thermometer-detector-447150.jpg?v=1677747161",
+  "ZigBee Human Presence Sensor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-zigbee-human-presence-sensor-detector-radar-wave-detection-sensor-for-home-security-596265.png?v=1692258238",
+  "ZigBee BHT-002 Thermostat": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/Zigbee_Smart_Thermostat_Programmable_Temperature_Controller_Water_Boiler_Electric_Heating-1.jpg?v=1758097145",
+  "ZigBee TRV Radiator Thermostat": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/tuya-zigbee30-new-mini-radiator-actuator-valve-smart-programmable-thermostat-temperature-controller-846552.jpg?v=1664530034",
+  "Tuya ZigBee Wired Hub": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/TuyaZigBeeBluetoothSmartGatewayHubType-CHomeAutomationBridgeWorkswithAlexa_GoogleHome-1_1.png?v=1761200931",
+  "Smart Control Panel (4-inch)": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/3.5-inSmartCenterControlPanel-1.jpg?v=1753335294",
+  "Handheld Center Control Panel": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/MOESTuyaAIDesktopCenterControlPanelAlexaBuilt-in-1.jpg?v=1784112295",
+  "ZigBee Downlight RGB 7W": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/TuyaZigBeeSmartLEDDownlightRoundSpotlights912WRGBColorDimmingLampWorkwithAlexaGoogleHome-1_20a264f1-4554-403e-aee5-53c550083ca6.png?v=1767956346",
+  "ZigBee GU10 Smart Bulb 5W": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-zigbee-downlight-tuya-dimming-spot-lamp-6w-rgb-change-warm-cool-light-217937.png?v=1691015674",
+  "ZigBee RGB LED Strip + Controller": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/wifi-smart-led-light-strip-rgb-strip-light-5050-controller-music-sync-mic-sound-color-changing-smart-life-app-24-key-remote-control-904086.jpg?v=1662712147",
+  "ZigBee Curtain Switch": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-zigbee-rf-smart-star-ring-curtain-switch-for-roller-shutter-electric-curtains-blind-motor-support-timing-remote-control-374550.jpg?v=1691512616",
+  "ZigBee Chain Blinds Motor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/TuyaZigBeeRechargeable16mmSmartRollerBlindsMotorfor172528mmTubes_App_VoiceControl-1.jpg?v=1765264801",
+  "ZigBee Smart Valve": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-smart-zigbee-water-heater-boiler-switch-wireless-control-timer-for-heating-water-666608.jpg?v=1668076315",
+  "Bluetooth Mesh Gateway": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/Bluetooth_MeshSmartGatewaywithType-C_Hubfor128Devices_Alexa_GoogleHomeSupport.jpg?v=1778307926",
+  "Bluetooth Smart Switch": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/bluetooth-smart-switch-relay-module-single-point-control-breaker-repeater-728967.jpg?v=1688612314",
+  "Bluetooth Brightness Thermometer": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-bluetooth-smart-carbon-dioxide-tester-portable-co2-temp-humi-air-quality-monitor-985319.jpg?v=1677720227",
+  "Bluetooth Chain Blinds Motor": "https://cdn.shopify.com/s/files/1/0095/4079/6497/files/TuyaMatterOverThreadSmartRollerBlindsMotor38mmTubeCurtainAutomation-1.jpg?v=1762755534",
+  "Bluetooth CO2 Air Quality Detector": "https://cdn.shopify.com/s/files/1/0095/4079/6497/products/moes-bluetooth-smart-carbon-dioxide-tester-portable-co2-temp-humi-air-quality-monitor-985319.jpg?v=1677720227",
+};
 
-  // Clean existing data
+async function main() {
+  console.log('Seeding MOES catalog...');
+
+  // Clean transactional data only — keep users & categories
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.cartItem.deleteMany();
   await prisma.product.deleteMany();
-  await prisma.category.deleteMany();
-  await prisma.user.deleteMany();
 
-  // Create admin user
-  const adminPassword = await bcrypt.hash('admin123', 10);
-  const admin = await prisma.user.create({
-    data: {
-      name: 'Admin',
-      email: 'admin@almashareq.com',
-      password: adminPassword,
-      role: Role.ADMIN,
-    },
-  });
+  // Seed users if empty
+  const userCount = await prisma.user.count();
+  if (userCount === 0) {
+    const adminPassword = await bcrypt.hash('admin123', 10);
+    await prisma.user.create({
+      data: { name: 'Admin', email: 'admin@almashareq.com', password: adminPassword, role: Role.ADMIN },
+    });
+    const userPassword = await bcrypt.hash('user123', 10);
+    await prisma.user.create({
+      data: { name: 'Demo User', email: 'user@almashareq.com', password: userPassword, role: Role.USER },
+    });
+    console.log('  - Users created');
+  } else {
+    console.log(`  - ${userCount} users exist, skipping`);
+  }
 
-  // Create demo user
-  const userPassword = await bcrypt.hash('user123', 10);
-  await prisma.user.create({
-    data: {
-      name: 'Demo User',
-      email: 'user@almashareq.com',
-      password: userPassword,
-      role: Role.USER,
-    },
-  });
+  // Seed categories if empty
+  let smartHome = await prisma.category.findUnique({ where: { slug: 'smart-home' } });
+  let officeSecurity = await prisma.category.findUnique({ where: { slug: 'office-security' } });
+  let networking = await prisma.category.findUnique({ where: { slug: 'networking' } });
+  let servers = await prisma.category.findUnique({ where: { slug: 'servers' } });
+  let automation = await prisma.category.findUnique({ where: { slug: 'automation' } });
 
-  // Create categories
-  const categories = await Promise.all([
-    prisma.category.create({
-      data: { name: 'Smart Home', slug: 'smart-home' },
-    }),
-    prisma.category.create({
-      data: { name: 'Office Security', slug: 'office-security' },
-    }),
-    prisma.category.create({
-      data: { name: 'Networking', slug: 'networking' },
-    }),
-    prisma.category.create({
-      data: { name: 'Servers', slug: 'servers' },
-    }),
-    prisma.category.create({
-      data: { name: 'Automation', slug: 'automation' },
-    }),
-  ]);
+  if (!smartHome) smartHome = await prisma.category.create({ data: { name: 'Smart Home', slug: 'smart-home' } });
+  if (!officeSecurity) officeSecurity = await prisma.category.create({ data: { name: 'Office Security', slug: 'office-security' } });
+  if (!networking) networking = await prisma.category.create({ data: { name: 'Networking', slug: 'networking' } });
+  if (!servers) servers = await prisma.category.create({ data: { name: 'Servers', slug: 'servers' } });
+  if (!automation) automation = await prisma.category.create({ data: { name: 'Automation', slug: 'automation' } });
 
-  const [smartHome, officeSecurity, networking, servers, automation] = categories;
-
-  // Create products
   const products = [
-    // Smart Home
-    {
-      name: 'Echo Dot 5th Gen (Alexa)',
-      description: 'Smart speaker with Alexa. Voice control your smart home, play music, check weather, and more. Arabic & English support.',
-      price: 1499,
-      stock: 50,
-      images: ['https://images.unsplash.com/photo-1543512214-318228f0f3b2?w=600'],
-      categoryId: smartHome.id,
-    },
-    {
-      name: 'Smart LED Bulb - WiFi',
-      description: '16 million colors, voice control compatible with Alexa and Google Home. Schedule and dim from your phone.',
-      price: 299,
-      originalPrice: 449,
-      stock: 200,
-      images: ['https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600'],
-      categoryId: smartHome.id,
-    },
-    {
-      name: 'Smart Lock Pro - Keypad',
-      description: 'Fingerprint, PIN code, and app unlock. Auto-lock feature. Works with Alexa for voice-controlled locking.',
-      price: 4999,
-      originalPrice: 6999,
-      stock: 25,
-      images: ['https://images.unsplash.com/photo-1558002038-1055907df827?w=600'],
-      categoryId: smartHome.id,
-    },
-    {
-      name: 'Smart Thermostat',
-      description: 'AI-powered temperature control. Learn your schedule and save energy. Remote control via app.',
-      price: 3499,
-      stock: 30,
-      images: ['https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600'],
-      categoryId: smartHome.id,
-    },
-    // Office Security
-    {
-      name: '4K CCTV Camera System (4-Pack)',
-      description: 'Ultra HD 4K resolution, night vision 30m, motion detection, mobile app viewing. PoE wired setup.',
-      price: 8999,
-      originalPrice: 12999,
-      stock: 15,
-      images: ['https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=600'],
-      categoryId: officeSecurity.id,
-    },
-    {
-      name: 'Access Control Panel - 2 Door',
-      description: 'RFID card + fingerprint access control. Supports up to 2 doors. Logs all entry attempts.',
-      price: 6499,
-      stock: 10,
-      images: ['https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600'],
-      categoryId: officeSecurity.id,
-    },
-    {
-      name: 'Motion Sensor Alarm System',
-      description: 'PIR motion sensors with loud siren alarm. Wireless, easy install. Sends phone notifications.',
-      price: 1999,
-      stock: 40,
-      images: ['https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600'],
-      categoryId: officeSecurity.id,
-    },
-    {
-      name: 'Smart Video Doorbell',
-      description: '2K HD video, two-way audio, motion detection. Cloud and local storage. Works with Alexa.',
-      price: 2499,
-      stock: 35,
-      images: ['https://images.unsplash.com/photo-1558002038-1055907df827?w=600'],
-      categoryId: officeSecurity.id,
-    },
-    // Networking
-    {
-      name: 'WiFi 6 Mesh Router System',
-      description: 'Tri-band WiFi 6 mesh system. Covers up to 500 sqm. Perfect for smart home device management.',
-      price: 4999,
-      originalPrice: 6999,
-      stock: 20,
-      images: ['https://images.unsplash.com/photo-1606904815999-434ff9b0e73f?w=600'],
-      categoryId: networking.id,
-    },
-    {
-      name: '24-Port Managed Switch',
-      description: 'Gigabit managed switch with VLAN support. Perfect for office network segmentation.',
-      price: 2999,
-      stock: 25,
-      images: ['https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600'],
-      categoryId: networking.id,
-    },
-    {
-      name: 'Outdoor Access Point',
-      description: 'IP67 rated, long-range WiFi access point. Ideal for outdoor smart devices and surveillance.',
-      price: 1799,
-      stock: 30,
-      images: ['https://images.unsplash.com/photo-1606904815999-434ff9b0e73f?w=600'],
-      categoryId: networking.id,
-    },
-    // Servers
-    {
-      name: 'Rack Server - 4U (AI Ready)',
-      description: 'Dual Xeon, 64GB RAM, NVMe storage. Optimized for AI inference and automation workloads.',
-      price: 34999,
-      originalPrice: 44999,
-      stock: 5,
-      images: ['https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600'],
-      categoryId: servers.id,
-    },
-    {
-      name: 'NAS Storage - 4 Bay',
-      description: '4-bay NAS with RAID support. 16TB raw storage. Perfect for CCTV footage and smart home data.',
-      price: 7999,
-      stock: 15,
-      images: ['https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600'],
-      categoryId: servers.id,
-    },
-    // Automation
-    {
-      name: 'Smart Hub Controller',
-      description: 'Central hub for Zigbee, Z-Wave, and WiFi devices. Automate your entire home or office.',
-      price: 2499,
-      stock: 40,
-      images: ['https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600'],
-      categoryId: automation.id,
-    },
-    {
-      name: 'Automated Blinds Motor',
-      description: 'WiFi motor for existing roller blinds. Schedule, voice control, and sun-based automation.',
-      price: 1299,
-      stock: 50,
-      images: ['https://images.unsplash.com/photo-1558002038-1055907df827?w=600'],
-      categoryId: automation.id,
-    },
+    // ─── WiFi Smart Switches ───────────────────────────────────────
+    { name: 'WiFi Smart Switch 1 Gang (US)', categoryId: smartHome.id, description: 'Single-gang smart light switch with WiFi 2.4GHz + RF433MHz. 100-240V AC, 10A. Colors: White, Gold, Black. Voice control via Alexa and Google Assistant. No neutral wire version available.' },
+    { name: 'WiFi Smart Switch 2 Gang (US)', categoryId: smartHome.id, description: 'Dual-gang smart light switch with WiFi 2.4GHz + RF433MHz. 100-240V AC, 10A per gang. Colors: White, Gold, Black. Supports timer, family sharing, and remote app control.' },
+    { name: 'WiFi Smart Switch 3 Gang (US)', categoryId: smartHome.id, description: 'Three-gang smart light switch with WiFi 2.4GHz + RF433MHz. 100-240V AC, 10A per gang. Backlight ON/OFF optional. Compatible with Alexa and Google Home.' },
+    { name: 'WiFi Smart Switch 1 Gang (EU)', categoryId: smartHome.id, description: 'European standard single-gang smart switch. WiFi 2.4GHz + RF433MHz, 200-240V AC, 10A. White/Gold/Black. No neutral wire required version available.' },
+    { name: 'Smart Dimmer Switch (EU)', categoryId: smartHome.id, description: 'Push dimmer switch with WiFi 2.4GHz + RF433MHz. 100-250V AC, 1A, 220W max. Colors: White, Black. Long press to dim, single press for ON/OFF. Compatible with Alexa and Google Assistant.' },
+    { name: 'Smart Dimmer Switch (US)', categoryId: smartHome.id, description: 'Push dimmer switch with WiFi 2.4GHz + RF433MHz. 100-250V AC, 2A, 440W (220V) / 220W (110V). Colors: White, Black. Independent dimmer control for each light.' },
+    { name: 'Smart Fan Switch (US)', categoryId: smartHome.id, description: 'WiFi fan speed controller with RF433MHz remote. 100-250V AC, 0.7A, 150W max. Colors: White, Black. Compatible with Alexa and Google Home for voice control.' },
+    { name: 'Smart Fan Light Switch (US)', categoryId: smartHome.id, description: 'Combined fan and light control switch. WiFi 2.4GHz + RF433MHz. Light 2200W (220V), fan 150W (220V). Colors: White, Black. Separate control for fan speed and light.' },
+    { name: 'WiFi Curtain Switch (US)', categoryId: automation.id, description: 'Smart curtain switch for motorized drapes. 100-240V AC, 2.5A. WiFi 2.4GHz protocol. Colors: White, Black. 30m indoor range. Supports timer scheduling and voice control.' },
+    { name: 'WiFi Garage Door Opener', categoryId: automation.id, description: 'Smart garage door controller with WiFi 2.4G. 100-240V AC. Includes alarm system integration. Compact size 87x40x23mm. IP20 rated. Works with Alexa and Google Assistant.' },
+
+    // ─── WiFi Modules ─────────────────────────────────────────────
+    { name: 'WiFi Switch Module 1 Gang', categoryId: smartHome.id, description: 'In-wall relay module for converting standard switches to smart. 90-250V AC, 10A total. WiFi 2.4GHz + RF433MHz. 52x47x18mm, IP20. 2-year warranty.' },
+    { name: 'WiFi Switch Module 2 Gang', categoryId: smartHome.id, description: 'Two-channel in-wall smart relay module. 90-250V AC, 10A total. WiFi 2.4GHz + RF433MHz. 52x47x18mm, IP20. Multi-control association support.' },
+    { name: 'WiFi Dimmer Module', categoryId: smartHome.id, description: 'In-wall dimmer module for retrofitting existing lights. 90-250V AC, 75W (110V) / 150W (220V). WiFi 2.4GHz. 52x47x18mm, IP20. 1-year warranty.' },
+    { name: 'WiFi Curtain Module', categoryId: automation.id, description: 'Curtain switch module for automating existing drapes. 90-250V AC, 2A, 500W max. WiFi 2.4GHz. 52x47x18mm, IP20. Supports timer scheduling.' },
+    { name: 'WiFi Chain Roller Blinds Motor', categoryId: automation.id, description: 'Motor for chain-operated roller blinds. 12V, 1.35Nm torque, 55rpm. WiFi 2.4GHz + RF433MHz. Max blinds size 2.5x3.5m, max weight 10KG. Battery backup optional.' },
+
+    // ─── WiFi Thermostats ──────────────────────────────────────────
+    { name: 'BHT-002 WiFi Thermostat', categoryId: automation.id, description: 'WiFi programmable room thermostat. 95-240V AC, 5A (water/gas boiler) / 16A (electric heating). NTC sensor. Capacitive touch buttons, 86x86mm standard box. <1.5W power consumption.' },
+    { name: 'BHT-006 WiFi Thermostat', categoryId: automation.id, description: 'WiFi thermostat with large LED display. 95-240V AC, 3A (water heating) / 16A (electric heating). NTC3950 sensor, ±1°C accuracy. PC+ABS fireproof shell.' },
+    { name: 'BHT-3000 WiFi Thermostat', categoryId: automation.id, description: 'Premium WiFi room thermostat with border-less rounded design. 95-240V AC. PC+ABS fireproof shell, capacitive touch buttons. Hidden touch buttons with light guide strip.' },
+    { name: 'BHT-8000 WiFi Thermostat', categoryId: automation.id, description: 'Heating thermostat with brushed metal panel. 95-240V AC. NTC3950 sensor, ±1°C accuracy. 86x86mm installation. IP20. For water/gas boiler heating systems.' },
+
+    // ─── WiFi Sensors ─────────────────────────────────────────────
+    { name: 'WiFi PIR Motion Sensor', categoryId: officeSecurity.id, description: 'Wireless motion detector with WiFi 2.4GHz. Sends push notifications on movement detection. Battery powered. Compatible with Alexa and Google Home for automation triggers.' },
+    { name: 'WiFi Temperature & Humidity Sensor', categoryId: officeSecurity.id, description: 'Indoor climate monitor with LCD display. -20°C to 60°C range, ±1°C accuracy. Humidity 0-100% RH, ±5% RH. 2x AAA batteries. WiFi 2.4GHz IEEE 802.11 b/g/n.' },
+    { name: 'WiFi Door & Window Sensor', categoryId: officeSecurity.id, description: 'Contact sensor for doors and windows. WiFi 2.4GHz. 2x AAA batteries, 6000 triggers battery life. 71x25x20mm main sensor. Sends instant alert when opened. Works with Alexa.' },
+    { name: 'WiFi Smoke Sensor', categoryId: officeSecurity.id, description: 'Photoelectric smoke detector with WiFi connectivity. 2x AAA batteries. 30 sqm monitoring range. -10°C to +50°C operating range. Push notifications on alarm.' },
+    { name: 'WiFi Gas Leakage Sensor', categoryId: officeSecurity.id, description: 'Natural gas leakage detector. AC100-240V powered. 75dB/m alarm sound. WiFi 2.4GHz. Solenoid valve output (12V/100Kpa). Relay output NC/NO optional.' },
+    { name: 'WiFi Water Leakage Sensor', categoryId: officeSecurity.id, description: 'Water leak detector with audible alarm. 2x AAA batteries, 3V. WiFi 2.4GHz IEEE 802.11 b/g/n. 70+dB buzzer. -10°C to +40°C operating temperature.' },
+    { name: 'WiFi Audible & Visual Alarm', categoryId: officeSecurity.id, description: 'Indoor siren and strobe alarm. USB 5V/1A powered. 105dB max volume, 18 ringtones. WiFi 2.4GHz IEEE 802.11 b/g/n. 45m wireless range.' },
+
+    // ─── WiFi Lighting ────────────────────────────────────────────
+    { name: 'Smart LED Bulb E27 RGB 9W', categoryId: smartHome.id, description: 'WiFi RGB smart bulb with E27 base. 9W, 60W equivalent. 2800-6200K + RGB color. AC100-240V. Dimmable. Compatible with Alexa and Google Home. 50,000+ hour lifespan.' },
+    { name: 'Smart LED Bulb E27 RGB 13W', categoryId: smartHome.id, description: 'High-power WiFi RGB bulb, E27 base. 13W, 2900-6000K + RGB. AC100-240V. Voice and app control. Group control supported.' },
+    { name: 'Smart LED Bulb GU10 RGB 5W', categoryId: smartHome.id, description: 'GU10 spot smart bulb, 5W. RGB + 2700K warm white. Dimmable. WiFi 2.4GHz. AC85-265V. Perfect for recessed lighting.' },
+    { name: 'Smart Downlight RGB 7W', categoryId: smartHome.id, description: 'Smart ceiling downlight, 7W RGB+CCT. 115mm diameter, 95mm cutout. AC100-240V. WiFi 2.4GHz IEEE 802.11 b/g/n. Dimmable with voice control.' },
+
+    // ─── WiFi Plugs & Sockets ────────────────────────────────────
+    { name: 'Mini Smart Socket 10A', categoryId: smartHome.id, description: 'Compact WiFi smart plug. 90-240V AC, 10A. WiFi 2.4GHz. Timer, schedule, and voice control. Energy monitoring supported. 54x49x36mm.' },
+    { name: 'Mini Smart Socket 16A', categoryId: smartHome.id, description: 'High-power WiFi smart plug. 100-250V, 16A, 3300W max. WiFi 2.4GHz. Electricity consumption tracking. 54x54x55mm.' },
+    { name: 'Smart Dimmer Power Socket', categoryId: smartHome.id, description: 'Dimmable smart socket for lamps. AC100-240V, 500W max. WiFi 2.4GHz. Adjustable brightness from phone or voice. 50x50x47mm.' },
+    { name: 'Glass Panel Smart Socket (EU)', categoryId: smartHome.id, description: 'Glass panel power socket with WiFi. 95-245V AC, 16A. WiFi 802.11 b/g/n 2.4GHz. Power monitoring. Incandescent load up to 3000W. EU/UK/FR standards.' },
+
+    // ─── WiFi Remotes & Controllers ──────────────────────────────
+    { name: 'WiFi IR Remote (UFO-R1)', categoryId: smartHome.id, description: 'Universal infrared remote controller. 2.4GHz WiFi, 38KHz carrier. Multi-directional IR control. Compatible with A/C, TV, set-top boxes. Android/iOS app.' },
+    { name: 'WiFi IR+RF Remote (UFO-R2)', categoryId: smartHome.id, description: 'Universal remote with IR + RF433/315MHz. 2.4GHz WiFi, 38KHz IR. Controls A/C, TV, RF devices like fans and curtains. Android/iOS.' },
+    { name: 'Air Conditioner Mate', categoryId: smartHome.id, description: 'Smart A/C controller and power monitor. 250V, 16A, 4000W. WiFi 2.4GHz. Turns any window A/C smart. Current measurement and scheduling.' },
+
+    // ─── Special WiFi ─────────────────────────────────────────────
+    { name: 'Smart Boiler Switch', categoryId: automation.id, description: 'WiFi boiler controller for water heating systems. 110-240V AC, 20A, 3000W. WiFi 2.4GHz. ABS + toughened glass panel. Timer and voice control.' },
+    { name: 'Smart Valve (WiFi)', categoryId: automation.id, description: 'Automatic shut-off valve for water/gas lines. 12V/1A, 1.6MPA pressure. WiFi 2.4GHz. 5-10 second operation time. Emergency shut-off via app.' },
+    { name: 'WiFi Smart Door Lock', categoryId: officeSecurity.id, description: 'Keyless smart door lock with 4 unlocking methods: fingerprint, password, smart card, and key. 100 fingerprint capacity, semiconductor sensor. 6V power, touch 12-key keypad. Phantom password support.' },
+    { name: 'WiFi Smart Wake-up Light', categoryId: smartHome.id, description: 'Sunrise alarm clock with 20-level brightness, 7 colors, FM radio, and 7 natural sounds. USB output. Simulates sunrise for gentle waking.' },
+    { name: 'WiFi Smart Star Projector', categoryId: smartHome.id, description: 'Nebula and star projector with WiFi control. RGB nebula + green/blue laser. 100-240V AC. Voice control via Alexa/Google. 43x43x83mm.' },
+
+    // ─── ZigBee Switches ──────────────────────────────────────────
+    { name: 'ZigBee Smart Switch 1 Gang (US)', categoryId: smartHome.id, description: 'ZigBee 3.0 single-gang smart switch. 100-240V AC. Max load 600W (220V) incandescent. Wireless frequency: ZigBee 2.4GHz. Works with Tuya ZigBee hub. Alexa and Google compatible.' },
+    { name: 'ZigBee Smart Dimmer Switch', categoryId: smartHome.id, description: 'ZigBee 3.0 dimmer switch for incandescent and LED loads. 90-250V AC, 600W total. 2.4GHz ZigBee. 20-30m outdoor range. Smooth dimming from app or voice.' },
+    { name: 'ZigBee Scene Switch', categoryId: smartHome.id, description: 'Wireless scene controller with CR2032 battery. ZigBee 3.0 communication. 86x86x15.5mm. Trigger custom lighting scenes. 500K button lifecycle.' },
+    { name: 'ZigBee Smart Knob Dimmer', categoryId: smartHome.id, description: 'Battery-powered rotary dimmer and scene controller. CR2032 3V, ZigBee 3.0. 50m open area range. 40x40x29mm. 1-year battery life. No wiring needed.' },
+    { name: 'ZigBee Smart Button', categoryId: smartHome.id, description: 'Wireless programmable scene button. CR2032 battery, ZigBee 3.0. IP55 weatherproof. 45x45x12.5mm. 30K presses battery life. 25m range.' },
+
+    // ─── ZigBee Modules ──────────────────────────────────────────
+    { name: 'ZigBee Switch Module 1 Gang', categoryId: smartHome.id, description: 'In-wall relay module with ZigBee 3.0. 90-250V AC, 10A total. 52x47x18mm, IP20. Retrofits behind existing switches for smart control.' },
+    { name: 'ZigBee Dimmer Module', categoryId: smartHome.id, description: 'In-wall dimmer module for ZigBee 3.0 systems. 90-250V AC, 75W (110V) / 150W (220V). 52x47x18mm, IP20. Compact design fits standard junction boxes.' },
+    { name: 'ZigBee LED Driver ZLD-RCW', categoryId: smartHome.id, description: 'RGB+CCT LED strip controller with ZigBee. DC12-24V input, 15A total, 6A per channel. 24x40x90mm. For addressable RGB LED strips up to 5 meters.' },
+
+    // ─── ZigBee Sensors ───────────────────────────────────────────
+    { name: 'ZigBee PIR Motion Sensor', categoryId: officeSecurity.id, description: 'ZigBee motion detector with 150° detection angle, 7m range. CR2 3V battery, 2-year standby. Compact design. Works with any ZigBee hub.' },
+    { name: 'ZigBee Door & Window Sensor', categoryId: officeSecurity.id, description: 'ZigBee contact sensor for entry points. CR2032 battery. Tamper protection. 25x40x12mm main unit. Low power consumption. Push alerts on open/close.' },
+    { name: 'ZigBee Smoke Detector', categoryId: officeSecurity.id, description: 'ZigBee smoke alarm with CR123A battery. Ceiling mount. 3m detection range. Wireless alert to phone via hub. Self-inspection supported.' },
+    { name: 'ZigBee Gas Leakage Sensor', categoryId: officeSecurity.id, description: 'ZigBee natural gas detector. AC220V powered. 8% LEL alarm threshold. Audible + visual + push alarm. Wall or ceiling mount. FCC compliant.' },
+    { name: 'ZigBee Water Leakage Sensor', categoryId: officeSecurity.id, description: 'ZigBee flood and leak detector. CR2032 battery. IP66 waterproof. 50mm diameter. 1+ year battery life. Instant push notification on water detection.' },
+    { name: 'ZigBee SOS Button', categoryId: officeSecurity.id, description: 'Emergency call button for ZigBee systems. CR2032 battery. 100m+ open air range. One-click SOS alert to phone. Ideal for elderly or medical alert.' },
+    { name: 'ZigBee Smart Brightness Thermometer', categoryId: officeSecurity.id, description: 'ZigBee environment monitor with temperature, humidity, and light sensor. CR2032 battery. 0-999 lux light detection. 66x66x11mm with 45x45mm screen.' },
+    { name: 'ZigBee Human Presence Sensor', categoryId: officeSecurity.id, description: 'Ceiling-mounted presence detector with ZigBee. DC12V, ≤70mA. 0.3-9m detection distance. Adjustable sensitivity 0-9. Light sensing 0-2000 lux.' },
+
+    // ─── ZigBee Thermostats ───────────────────────────────────────
+    { name: 'ZigBee BHT-002 Thermostat', categoryId: automation.id, description: 'ZigBee room thermostat for floor heating and boilers. 95-240V AC. 5A (water) / 16A (electric). NTC sensor. Capacitive touch, 86x86mm.' },
+    { name: 'ZigBee TRV Radiator Thermostat', categoryId: automation.id, description: 'Smart radiator valve with ZigBee. 2x AA batteries. M30x1.5 thread, ±0.5°C accuracy. Weekly scheduling. LCD display. Works with standard radiator valves.' },
+
+    // ─── ZigBee Hubs & Controllers ────────────────────────────────
+    { name: 'Tuya ZigBee Wired Hub', categoryId: networking.id, description: 'ZigBee gateway for Tuya ecosystem. Micro USB DC5V/1A. Connects up to 100 ZigBee devices. Works with Alexa, Google Home, and Apple HomeKit.' },
+    { name: 'Smart Control Panel (4-inch)', categoryId: smartHome.id, description: 'Wall-mounted touchscreen controller. 4-inch 480x480 multi-touch. WiFi + Bluetooth + ZigBee gateway built-in. 86x86mm. Controls up to 100 devices.' },
+    { name: 'Handheld Center Control Panel', categoryId: smartHome.id, description: 'Portable smart home controller with IR blaster. DC5V/1A. WiFi + Bluetooth + IR (38KHz, 8m range). Standby <0.5W. Controls A/C, TV, and smart devices.' },
+
+    // ─── ZigBee Lighting ──────────────────────────────────────────
+    { name: 'ZigBee Downlight RGB 7W', categoryId: smartHome.id, description: 'ZigBee smart downlight, 7W RGB+CCT. 115mm diameter, 95mm cutout. AC100-240V. ZigBee 3.0. 690lm luminous flux. Dimmable.' },
+    { name: 'ZigBee GU10 Smart Bulb 5W', categoryId: smartHome.id, description: 'ZigBee GU10 spot bulb, 5W. RGB + 2200-6500K CCT. Dimmable. AC90-240V. 345lm, 36° beam angle. Works with ZigBee hub.' },
+    { name: 'ZigBee RGB LED Strip + Controller', categoryId: smartHome.id, description: '5-meter RGB+CCT LED strip with ZigBee controller. DC12V. 5050 SMD 30 LEDs/m. Waterproof. Voice and app control. Perfect for ambient lighting.' },
+
+    // ─── ZigBee Curtains & Valves ────────────────────────────────
+    { name: 'ZigBee Curtain Switch', categoryId: automation.id, description: 'ZigBee curtain control switch. AC100-240V, 600W max, 2.5A. ZigBee protocol. Zero line and fire line connection. Compatible with standard curtain motors.' },
+    { name: 'ZigBee Chain Blinds Motor', categoryId: automation.id, description: 'ZigBee blinds motor with battery and solar options. DC 8.4V input, solar 12V/0.3W. 0.45Nm torque. 42x33x165mm. Low noise operation.' },
+    { name: 'ZigBee Smart Valve', categoryId: automation.id, description: 'ZigBee water/gas shut-off valve actuator. 12VDC/1A adapter. 1.6MPA pressure rating. 30-60kg.cm torque. 5-10 second operation. Threaded ball valve.' },
+
+    // ─── Bluetooth Series ─────────────────────────────────────────
+    { name: 'Bluetooth Mesh Gateway', categoryId: networking.id, description: 'Multi-protocol gateway supporting Bluetooth Mesh, WiFi 2.4GHz, and ZigBee. 5V/1A. 92x92x40mm. Bridges BLE sensors to the cloud for remote access.' },
+    { name: 'Bluetooth Smart Switch', categoryId: smartHome.id, description: 'Bluetooth Mesh smart switch. 100-240V AC, 10A per gang. BLE Mesh protocol. Colors: White, Black, Gold. Works with Bluetooth gateway.' },
+    { name: 'Bluetooth Brightness Thermometer', categoryId: officeSecurity.id, description: 'Bluetooth environment sensor. CR2032 battery. Measures temperature, humidity, and luminance 0-999 lux. 66x66x11mm with screen. Requires Bluetooth gateway.' },
+    { name: 'Bluetooth Chain Blinds Motor', categoryId: automation.id, description: 'Bluetooth roller blinds motor. 110-240V AC with 8.4VDC backup. Solar panel compatible. 0.45Nm torque. 42x33x165mm. Bluetooth Mesh control.' },
+    { name: 'Bluetooth CO2 Air Quality Detector', categoryId: officeSecurity.id, description: 'Carbon dioxide monitor with Bluetooth. 5V/2A. 400-5000ppm CO2 range. Temperature and humidity display. 3 emoji air quality indicator. Requires Bluetooth gateway.' },
   ];
 
   for (const product of products) {
-    await prisma.product.create({ data: product });
+    await prisma.product.create({
+      data: { ...product, price: 0, stock: 0, images: [IMAGES[product.name]] },
+    });
   }
 
   console.log('Seeded:');
-  console.log(`  - Admin: admin@almashareq.com / admin123`);
-  console.log(`  - User: user@almashareq.com / user123`);
-  console.log(`  - ${categories.length} categories`);
-  console.log(`  - ${products.length} products`);
+  console.log(`  - ${products.length} MOES products`);
+  console.log(`  - 5 categories`);
 }
 
 main()
