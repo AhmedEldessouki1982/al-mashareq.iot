@@ -13,6 +13,7 @@ interface AuthStore {
   //state
   user: User | null;
   token: string | null;
+  hasApiKey: boolean;
   //status
   isLoading: boolean;
   //actions
@@ -20,6 +21,7 @@ interface AuthStore {
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   loadProfile: () => Promise<void>;
+  setHasApiKey: (value: boolean) => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -27,6 +29,7 @@ export const useAuthStore = create<AuthStore>()(
     (set, get) => ({
       user: null,
       token: null,
+      hasApiKey: false,
       isLoading: false,
 
       login: async (email: string, password: string) => {
@@ -58,8 +61,10 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       logout: () => {
-        set({ user: null, token: null });
+        set({ user: null, token: null, hasApiKey: false });
       },
+
+      setHasApiKey: (value: boolean) => set({ hasApiKey: value }),
 
       loadProfile: async () => {
         const token = get().token;

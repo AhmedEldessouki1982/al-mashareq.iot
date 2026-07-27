@@ -4,10 +4,9 @@ import { useAuthStore } from '../../store/auth';
 import { api } from '../../lib/api';
 
 export default function AdminSettings() {
-  const { token } = useAuthStore();
+  const { token, hasApiKey, setHasApiKey } = useAuthStore();
   const [apiKey, setApiKey] = useState('');
   const [showKey, setShowKey] = useState(false);
-  const [hasApiKey, setHasApiKey] = useState(false);
   const [tokenUsage, setTokenUsage] = useState<{ totalTokens: number; totalCost: number; totalCalls: number; model: string } | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');

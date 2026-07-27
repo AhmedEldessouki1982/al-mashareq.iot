@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, Tags, ShoppingCart, Users, ArrowLeft, Zap, MessageSquare, Settings, Cpu } from 'lucide-react';
+import { LayoutDashboard, Package, Tags, ShoppingCart, Users, ArrowLeft, Zap, MessageSquare, Settings, Cpu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useAuthStore } from '../../store/auth';
 import { api } from '../../lib/api';
 
@@ -16,9 +16,17 @@ const sidebarLinks = [
 
 export function AdminLayout() {
   const location = useLocation();
-  const { user, token } = useAuthStore();
-  const [hasApiKey, setHasApiKey] = useState(false);
+  const { user, token, hasApiKey, setHasApiKey } = useAuthStore();
   const [footerUsage, setFooterUsage] = useState<{ totalTokens: number; totalCost: number } | null>(null);
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem('admin_sidebar_collapsed') === 'true');
+
+  const toggleSidebar = () => {
+    setCollapsed(prev => {
+      const next = !prev;
+      localStorage.setItem('admin_sidebar_collapsed', String(next));
+      return next;
+    });
+  };
 
   useEffect(() => {
     if (!token) return;
@@ -36,12 +44,12 @@ export function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-[var(--bg-primary)]">
-      <aside className="w-64 border-r border-[var(--border-primary)] bg-[var(--bg-secondary)] p-4 flex flex-col shrink-0">
-        <Link to="/" className="flex items-center gap-2 mb-8 px-2">
-          <div className="w-7 h-7 rounded-lg bg-[var(--text-primary)] flex items-center justify-center">
+      <aside className={`relative border-r border-[var(--border-primary)] bg-[var(--bg-secondary)] p-4 flex flex-col shrink-0 transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'}`}>
+        <Link to="/" className={`flex items-center gap-2 mb-8 ${collapsed ? 'justify-center px-0' : 'px-2'}`}>
+          <div className="w-7 h-7 rounded-lg bg-[var(--text-primary)] flex items-center justify-center shrink-0">
             <Zap className="w-4 h-4 text-[var(--bg-primary)]" />
           </div>
-          <span className="font-bold text-[var(--text-primary)]">AL-Mashareq</span>
+          {!collapsed && <span className="font-bold text-[var(--text-primary)] truncate">AL-Mashareq</span>}
         </Link>
 
         <nav className="space-y-1 flex-1">
@@ -53,26 +61,44 @@ export function AdminLayout() {
               <Link
                 key={link.href}
                 to={link.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 rounded-xl text-sm font-medium transition-colors ${
+                  collapsed
+                    ? 'justify-center p-2.5'
+                    : 'px-3 py-2.5'
+                } ${
                   isActive
                     ? 'bg-[var(--accent-muted)] text-[var(--accent)] border border-[var(--accent-border)]'
                     : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)]'
                 }`}
               >
-                <link.icon className="w-4 h-4" />
-                {link.label}
+                <link.icon className="w-4 h-4 shrink-0" />
+                {!collapsed && link.label}
               </Link>
             );
           })}
         </nav>
 
-        <Link
-          to="/"
-          className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Store
-        </Link>
+        <div className="border-t border-[var(--border-primary)] pt-2 mt-2 space-y-1">
+          <button
+            onClick={toggleSidebar}
+            className={`w-full flex items-center gap-3 rounded-xl text-sm font-medium transition-colors text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] ${
+              collapsed ? 'justify-center p-2.5' : 'px-3 py-2.5'
+            }`}
+          >
+            {collapsed ? <PanelLeftOpen className="w-4 h-4 shrink-0" /> : <PanelLeftClose className="w-4 h-4 shrink-0" />}
+            {!collapsed && <span>Collapse</span>}
+          </button>
+
+          <Link
+            to="/"
+            className={`flex items-center gap-3 rounded-xl text-sm font-medium transition-colors text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] ${
+              collapsed ? 'justify-center p-2.5' : 'px-3 py-2.5'
+            }`}
+          >
+            <ArrowLeft className="w-4 h-4 shrink-0" />
+            {!collapsed && 'Back to Store'}
+          </Link>
+        </div>
       </aside>
 
       <div className="flex-1 flex flex-col">
