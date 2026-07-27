@@ -51,40 +51,40 @@ export default function Shop() {
   });
 
   return (
-    <div className="min-h-screen shop-dark relative">
+    <div className="min-h-screen relative">
       <div className="hero-grid" aria-hidden="true" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16">
         <div className="mb-10">
           <h1
-            className="text-3xl md:text-4xl font-bold text-white mb-2"
+            className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-2"
             style={{ fontFamily: 'var(--heading)' }}
           >
             Shop
           </h1>
-          <p className="text-white/50">Browse smart home and office devices</p>
+          <p className="text-[var(--text-muted)]">Browse smart home and office devices</p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-10">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-faint)]" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search products..."
-              className="w-full h-11 pl-10 pr-4 rounded-lg bg-white/5 border border-white/10 text-white text-sm placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 focus:border-[var(--accent)] transition-all"
+              className="w-full h-11 pl-10 pr-4 rounded-lg bg-[var(--bg-input)] border border-[var(--border-primary)] text-[var(--text-primary)] text-sm placeholder:text-[var(--text-faint)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50 focus:border-[var(--accent)] transition-all"
               style={{ fontFamily: 'var(--mono)' }}
             />
           </div>
 
           <div className="flex items-center gap-2 overflow-x-auto pb-1">
-            <SlidersHorizontal className="w-4 h-4 text-white/30 shrink-0" />
+            <SlidersHorizontal className="w-4 h-4 text-[var(--text-faint)] shrink-0" />
             <button
               onClick={() => setSelectedCategory(null)}
               className={`px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${
                 !selectedCategory
                   ? 'bg-[var(--accent)] text-[#1A1A1A] border border-[var(--accent)]'
-                  : 'text-white/50 hover:text-white border border-white/10 hover:border-white/20'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--border-primary)] hover:border-[var(--border-hover)]'
               }`}
               style={{ fontFamily: 'var(--heading)' }}
             >
@@ -97,7 +97,7 @@ export default function Shop() {
                 className={`px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${
                   selectedCategory === cat.id
                     ? 'bg-[var(--accent)] text-[#1A1A1A] border border-[var(--accent)]'
-                    : 'text-white/50 hover:text-white border border-white/10 hover:border-white/20'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--border-primary)] hover:border-[var(--border-hover)]'
                 }`}
                 style={{ fontFamily: 'var(--heading)' }}
               >
@@ -110,20 +110,20 @@ export default function Shop() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-xl border border-white/10 bg-white/5 overflow-hidden animate-pulse">
-                <div className="aspect-square bg-white/5" />
+              <div key={i} className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-muted)] overflow-hidden animate-pulse">
+                <div className="aspect-square bg-[var(--bg-muted)]" />
                 <div className="p-4 space-y-3">
-                  <div className="h-4 bg-white/5 rounded w-3/4" />
-                  <div className="h-3 bg-white/5 rounded w-1/2" />
-                  <div className="h-5 bg-white/5 rounded w-1/3" />
+                  <div className="h-4 bg-[var(--bg-muted)] rounded w-3/4" />
+                  <div className="h-3 bg-[var(--bg-muted)] rounded w-1/2" />
+                  <div className="h-5 bg-[var(--bg-muted)] rounded w-1/3" />
                 </div>
               </div>
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-white/50 text-lg">No products found</p>
-            <p className="text-white/30 text-sm mt-1">Try adjusting your search or filters</p>
+            <p className="text-[var(--text-muted)] text-lg">No products found</p>
+            <p className="text-[var(--text-faint)] text-sm mt-1">Try adjusting your search or filters</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

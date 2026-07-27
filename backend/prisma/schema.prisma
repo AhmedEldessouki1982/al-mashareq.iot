@@ -42,6 +42,7 @@ model Product {
   id            String     @id @default(cuid())
   name          String
   description   String
+  descriptionAr String   @default("")
   price         Decimal    @db.Decimal(10, 2)
   originalPrice Decimal?   @db.Decimal(10, 2)
   stock         Int        @default(0)

@@ -9,6 +9,7 @@ interface ProductData {
   id: string;
   name: string;
   description: string;
+  descriptionAr: string;
   price: number;
   originalPrice?: number;
   stock: number;
@@ -35,7 +36,7 @@ export default function Product() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center shop-dark">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -43,10 +44,10 @@ export default function Product() {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 shop-dark">
-        <p className="text-white/50">Product not found</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <p className="text-[var(--text-muted)]">Product not found</p>
         <Link to="/shop">
-          <Button variant="outline" className="gap-2 border-white/10 text-white hover:bg-white/5">
+          <Button variant="outline" className="gap-2 border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-muted)]">
             <ArrowLeft className="w-4 h-4" />
             Back to Shop
           </Button>
@@ -58,23 +59,23 @@ export default function Product() {
   const isProfessional = Number(product.price) >= 3000;
 
   return (
-    <div className="min-h-screen shop-dark relative">
+    <div className="min-h-screen relative">
       <div className="hero-grid" aria-hidden="true" />
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12">
-        <Link to="/shop" className="inline-flex items-center gap-2 text-sm text-white/40 hover:text-white transition-colors mb-8">
+        <Link to="/shop" className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors mb-8">
           <ArrowLeft className="w-4 h-4" />
           Back to Shop
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div>
-            <div className="relative aspect-square rounded-xl overflow-hidden bg-white/5 border border-white/10">
+            <div className="relative aspect-square rounded-xl overflow-hidden bg-[var(--bg-muted)] border border-[var(--border-primary)]">
               {imgError || !product.images?.[0] ? (
                 <div className="w-full h-full flex flex-col items-center justify-center gap-3">
-                  <div className="w-16 h-16 rounded-lg bg-white/5 flex items-center justify-center">
-                    <ShoppingCart className="w-6 h-6 text-white/20" />
+                  <div className="w-16 h-16 rounded-lg bg-[var(--bg-muted)] flex items-center justify-center">
+                    <ShoppingCart className="w-6 h-6 text-[var(--text-faint)]" />
                   </div>
-                  <span className="text-sm text-white/30">{product.category?.name}</span>
+                  <span className="text-sm text-[var(--text-faint)]">{product.category?.name}</span>
                 </div>
               ) : (
                 <img
@@ -92,12 +93,19 @@ export default function Product() {
               {product.category?.name}
             </span>
             <h1
-              className="text-3xl md:text-4xl font-bold text-white mb-4"
+              className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4"
               style={{ fontFamily: 'var(--heading)' }}
             >
               {product.name}
             </h1>
-            <p className="text-white/50 leading-relaxed mb-6">{product.description}</p>
+            <div className="space-y-4 mb-6">
+              <p className="text-[var(--text-muted)] leading-relaxed">{product.description}</p>
+              {product.descriptionAr && (
+                <p className="text-[var(--text-muted)] leading-relaxed text-right" dir="rtl" style={{ fontFamily: 'var(--arabic)' }}>
+                  {product.descriptionAr}
+                </p>
+              )}
+            </div>
 
             {isProfessional && (
               <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-[var(--accent-muted)] border border-[var(--accent-border)] w-fit">
@@ -106,24 +114,24 @@ export default function Product() {
               </div>
             )}
 
-            <p className="text-sm text-white/40 mb-6">
+            <p className="text-sm text-[var(--text-muted)] mb-6">
               {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
             </p>
 
             <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 p-1">
+              <div className="flex items-center gap-2 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-muted)] p-1">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-9 h-9 rounded-md flex items-center justify-center text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+                  className="w-9 h-9 rounded-md flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] transition-colors"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
-                <span className="w-8 text-center text-white font-medium" style={{ fontFamily: 'var(--mono)' }}>
+                <span className="w-8 text-center text-[var(--text-primary)] font-medium" style={{ fontFamily: 'var(--mono)' }}>
                   {quantity}
                 </span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-9 h-9 rounded-md flex items-center justify-center text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+                  className="w-9 h-9 rounded-md flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)] transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -142,9 +150,9 @@ export default function Product() {
               </Button>
             </div>
 
-            <div className="border-t border-white/10 pt-6 space-y-3">
+            <div className="border-t border-[var(--border-primary)] pt-6 space-y-3">
               {['30-day return policy', 'Secure checkout with Fawry support'].map((text) => (
-                <div key={text} className="flex items-center gap-3 text-sm text-white/40">
+                <div key={text} className="flex items-center gap-3 text-sm text-[var(--text-muted)]">
                   <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] shrink-0" />
                   {text}
                 </div>
