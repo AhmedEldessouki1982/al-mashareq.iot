@@ -55,6 +55,9 @@ export default function Shop() {
       <div className="hero-grid" aria-hidden="true" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16">
         <div className="mb-10">
+          <p className="text-sm font-medium tracking-[0.25em] uppercase text-[var(--accent)] mb-3">
+            The catalog
+          </p>
           <h1
             className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-2"
             style={{ fontFamily: 'var(--heading)' }}

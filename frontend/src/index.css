@@ -129,6 +129,17 @@ body {
   color: inherit;
 }
 
+/* Arabic wordmark — hero only (المشارق).
+   Scope: this class is applied ONLY to the hero wordmark element.
+   Toggle alternate — swap the font-family below to compare:
+     Lalezar (alternate): font-family: 'Lalezar', 'Cairo', sans-serif;
+     Cairo ExtraBold 800 (DEFAULT — ship this): font-family: 'Cairo', sans-serif;
+   All other Arabic text (--arabic var), the nav, and site typography are unaffected. */
+.arabic-wordmark {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 800;
+}
+
 /* Hero blueprint grid */
 .hero-grid {
   position: absolute;
@@ -175,6 +186,28 @@ body {
 }
 .shop-dark .hero-grid {
   --hero-grid-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Marquee ticker — pure CSS, seamless loop */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 48s linear infinite;
+  will-change: transform;
+}
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
 }
 
 /* Device status dots */

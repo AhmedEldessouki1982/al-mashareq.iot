@@ -45,29 +45,30 @@ export function Hero() {
       <div className="hero-grid" aria-hidden="true" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-12 lg:gap-16 items-center">
           {/* Left: copy */}
           <div>
-            <h1
-              className="text-5xl md:text-6xl lg:text-7xl font-black leading-none mb-2 text-[var(--text-primary)]"
-              style={{ fontFamily: 'var(--arabic)' }}
+            <p
+              className="arabic-wordmark text-[1.75rem] md:text-[2.125rem] leading-none mb-3 text-[var(--text-primary)]"
             >
               المشارق
-            </h1>
+            </p>
             <p className="text-sm font-medium tracking-wide uppercase text-[var(--accent)] mb-4">
               AL-Mashareq · Smart Home &amp; Office
             </p>
-            <h2
-              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight mb-6"
-              style={{ fontFamily: "var(--heading)" }}
+            <p
+              className="text-[11px] md:text-xs font-semibold tracking-[0.3em] uppercase text-[var(--accent)] mb-4"
+              style={{ fontFamily: 'var(--mono)' }}
             >
-              Dim the lights.
-              <br />
-              Lock the door.
-              <br />
-              Check the cameras.
+              Automation Specialist · Est. 2019
+            </p>
+            <h2
+              className="font-black tracking-tight mb-5 text-[var(--text-primary)]"
+              style={{ fontFamily: "var(--heading)", fontSize: 'clamp(1.5rem, 3vw, 2.5rem)', lineHeight: '1.1' }}
+            >
+              Dim the lights. Lock the door. Check the cameras.
             </h2>
-            <p className="text-lg text-[var(--text-muted)] max-w-lg mb-6 leading-relaxed">
+            <p className="text-lg text-[var(--text-muted)] max-w-lg mb-8 leading-relaxed">
               All from your phone. Smart hardware, installed in Egypt &mdash; no
               subscription required.
             </p>
@@ -103,24 +104,24 @@ export function Hero() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link to="/shop">
+              <Link to="/contact">
                 <Button
                   size="lg"
                   className="bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[#1A1A1A] gap-2 h-12 px-8 rounded-lg font-semibold"
                 >
-                  Shop Devices
+                  Work With Us
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
-              <a href="#features">
+              <Link to="/shop">
                 <Button
                   size="lg"
                   variant="outline"
                   className="h-12 px-8 rounded-lg"
                 >
-                  See How It Works
+                  Shop Devices
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
 

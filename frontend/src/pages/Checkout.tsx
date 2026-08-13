@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CheckCircle, ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '../store/cart';
 import { api } from '../lib/api';

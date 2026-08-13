@@ -56,7 +56,9 @@ export default function Product() {
     );
   }
 
-  const isProfessional = Number(product.price) >= 3000;
+  const isProfessional =
+    ['networking', 'servers', 'office-security'].includes(product.category?.slug ?? '') ||
+    Number(product.price) >= 3000;
 
   return (
     <div className="min-h-screen relative">
@@ -71,16 +73,23 @@ export default function Product() {
           <div>
             <div className="relative aspect-square rounded-xl overflow-hidden bg-[var(--bg-muted)] border border-[var(--border-primary)]">
               {imgError || !product.images?.[0] ? (
-                <div className="w-full h-full flex flex-col items-center justify-center gap-3">
-                  <div className="w-16 h-16 rounded-lg bg-[var(--bg-muted)] flex items-center justify-center">
-                    <ShoppingCart className="w-6 h-6 text-[var(--text-faint)]" />
+                <div className="w-full h-full relative">
+                  <div className="hero-grid" aria-hidden="true" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6">
+                    <div className="w-16 h-16 rounded-lg bg-[var(--accent-muted)] border border-[var(--accent-border)] flex items-center justify-center">
+                      <ShoppingCart className="w-6 h-6 text-[var(--accent)]" />
+                    </div>
+                    <span className="text-sm text-[var(--text-faint)] text-center">{product.category?.name}</span>
+                    <span className="text-xs text-[var(--text-faint)] text-center max-w-[80%]" style={{ fontFamily: 'var(--mono)' }}>
+                      {product.name}
+                    </span>
                   </div>
-                  <span className="text-sm text-[var(--text-faint)]">{product.category?.name}</span>
                 </div>
               ) : (
                 <img
                   src={product.images[0]}
                   alt={product.name}
+                  referrerPolicy="no-referrer"
                   className="w-full h-full object-cover"
                   onError={() => setImgError(true)}
                 />
