@@ -47,6 +47,12 @@
   --status-red: #C0392B;
   --status-amber: #D4A853;
   --status-off: #9A9A9A;
+
+  /* Landing signal (light) — deep teal, readable on paper */
+  --signal: #0F766E;
+  --signal-muted: rgba(15, 118, 110, 0.08);
+  --signal-border: rgba(15, 118, 110, 0.3);
+  --accent-ink: #8A6414;
 }
 
 .dark {
@@ -89,6 +95,12 @@
   --status-red: #E05545;
   --status-amber: #E0B860;
   --status-off: #6B6B6B;
+
+  /* Landing signal (dark) — bright cyan on charcoal */
+  --signal: #5EEAD4;
+  --signal-muted: rgba(94, 234, 212, 0.08);
+  --signal-border: rgba(94, 234, 212, 0.3);
+  --accent-ink: #E0B860;
 }
 
 html {
@@ -210,16 +222,90 @@ body {
   animation-play-state: paused;
 }
 
-/* Device status dots */
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: inline-block;
+/* Landing: sci-fi layer (signal palette, display face, live motion) */
+:root {
+  --display: 'Chakra Petch', system-ui, sans-serif;
 }
-.status-dot.on { background: var(--status-green); }
-.status-dot.off { background: var(--status-off); }
-.status-dot.locked { background: var(--status-green); }
+
+.font-display {
+  font-family: var(--display);
+}
+
+.glow-card {
+  position: relative;
+  isolation: isolate;
+}
+.glow-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), var(--accent-muted), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.glow-card:hover::before {
+  opacity: 1;
+}
+
+.flow-line {
+  fill: none;
+  stroke: var(--signal);
+  stroke-width: 0.2;
+  stroke-dasharray: 0.8 1.2;
+  opacity: 0.45;
+  animation: flow-dash 1.4s linear infinite;
+}
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -2;
+  }
+}
+
+.status-pulse {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--signal);
+  animation: pulse-ring 2s ease-out infinite;
+}
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 var(--signal-border);
+  }
+  100% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+.pipeline-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 17px;
+  height: 1px;
+  overflow: hidden;
+  background: var(--border-primary);
+}
+.pipeline-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 30%;
+  background: linear-gradient(90deg, transparent, var(--signal), transparent);
+  animation: sweep 3.5s linear infinite;
+}
+@keyframes sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(400%);
+  }
+}
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {

@@ -1,39 +1,41 @@
-const tickerItems = [
-  'Smart Locks',
-  'Networking',
-  'Camera Systems',
-  'Server Racks',
-  'Lighting Control',
-  'Install Services',
-];
+const items = [
+  'Smart locks',
+  'Camera systems',
+  'Lighting control',
+  'Sensor networks',
+  'Mesh networking',
+  'Local servers',
+  'Automation scenes',
+  'Custom dashboards',
+]
 
-function TickerRow({ hidden }: { hidden?: boolean }) {
+function TickerRow({ hidden = false }: { hidden?: boolean }) {
   return (
     <div className="flex shrink-0 items-center" aria-hidden={hidden || undefined}>
-      {tickerItems.map((item) => (
+      {items.map((item) => (
         <span key={item} className="flex items-center whitespace-nowrap">
-<span
-              className="px-6 md:px-10 text-xs md:text-sm uppercase tracking-[0.25em] font-semibold text-[var(--text-primary)] dark:text-[var(--accent)]"
-              style={{ fontFamily: 'var(--heading)', opacity: 0.75 }}
-            >
+          <span
+            className="px-6 text-xs font-semibold uppercase tracking-[0.25em] text-[var(--text-secondary)] md:px-10 md:text-sm"
+            style={{ fontFamily: 'var(--mono)' }}
+          >
             {item}
           </span>
-          <span className="text-[var(--accent)]" style={{ opacity: 0.4 }} aria-hidden="true">
+          <span className="text-[var(--signal)] opacity-60" aria-hidden="true">
             ✦
           </span>
         </span>
       ))}
     </div>
-  );
+  )
 }
 
 export function Marquee() {
   return (
-    <div className="marquee bg-[var(--bg-secondary)] dark:bg-[#161616] border-y border-[var(--border-primary)] py-3 md:py-4" role="presentation">
+    <div className="marquee border-y border-[var(--border-primary)] bg-[var(--bg-secondary)] py-4" role="presentation">
       <div className="marquee-track">
         <TickerRow />
         <TickerRow hidden />
       </div>
     </div>
-  );
+  )
 }
